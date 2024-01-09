@@ -2,20 +2,17 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
+
+	"github.com/samuelmaxi/api-go-rest/models"
+	"github.com/samuelmaxi/api-go-rest/routes"
 )
 
-func Home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Home page")
-}
-
-func HandlerRequest() {
-	http.HandleFunc("/", Home)
-	log.Fatal(http.ListenAndServe(":8000", nil))
-}
-
 func main() {
+	models.Personalities = []models.Personality{
+		{Id: 1, Name: "Samuel", History: "History 123..."},
+		{Id: 2, Name: "Bob", History: "History 321"},
+	}
+
 	fmt.Println("Hello word")
-	HandlerRequest()
+	routes.HandlerRequest()
 }

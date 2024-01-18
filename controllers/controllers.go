@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/samuelmaxi/api-go-rest/database"
 	"github.com/samuelmaxi/api-go-rest/models"
 )
 
@@ -14,28 +15,51 @@ func Home(c *gin.Context) {
 }
 
 func AllPersonalities(c *gin.Context) {
-	c.JSON(http.StatusOK, models.Personalities)
-}
-
-func FirstPersanalitie(c *gin.Context) {
-	c.JSON(http.StatusOK, models.Personalities)
-}
-
-func SecondPersonalitie(c *gin.Context) {
-	c.JSON(http.StatusOK, models.Personalities[1])
+	var p []models.Personality
+	database.DB.Find(&p)
+	c.JSON(http.StatusOK, p)
 }
 
 func ReturnPersonalitie(c *gin.Context) {
 	vars := c.Param("id")
+	var p models.Personality
+
 	id, err := strconv.Atoi(vars)
 	if err != nil {
 		fmt.Println("error: ", err)
 	}
+	database.DB.First(&p, id)
+	c.JSON(http.StatusOK, p)
+}
 
-	for _, personalitie := range models.Personalities {
-		if personalitie.Id == id {
-			c.JSON(http.StatusOK, personalitie)
-		}
+func CreateNewPersonalitie(c *gin.Context) {
+	var newPersonalitie models.Personality
+	c.BindJSON(&newPersonalitie)
+	database.DB.Create(&newPersonalitie)
+	c.JSON(http.StatusOK, newPersonalitie)
+}
+
+func DeletePersonalitie(c *gin.Context) {
+	vars := c.Param("id")
+	var p models.Personality
+	id, err := strconv.Atoi(vars)
+	if err != nil {
+		fmt.Println("error: ", err)
 	}
-	fmt.Printf("Valor do id: %d", id)
+	database.DB.Delete(&p, id)
+	c.JSON(http.StatusOK, p)
+}
+
+func EditPersonalitie(c *gin.Context) {
+	vars := c.Param("id")
+	var p models.Personality
+
+	id, err := strconv.Atoi(vars)
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+	database.DB.First(&p, id)
+	c.BindJSON(&p)
+	database.DB.Save(&p)
+	c.JSON(http.StatusOK, &p)
 }
